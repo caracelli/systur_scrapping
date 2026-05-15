@@ -11,6 +11,9 @@ credenciais.json
 # Saídas geradas
 saidas/
 
+# Fila de processamento (estado de execução — não versionar)
+processamento/
+
 # OS
 .DS_Store
 Thumbs.db
