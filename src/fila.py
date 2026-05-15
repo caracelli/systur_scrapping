@@ -1,4 +1,5 @@
 import json
+import time
 import openpyxl
 from pathlib import Path
 from datetime import datetime
@@ -6,6 +7,8 @@ from datetime import datetime
 FILA_PATH = Path("processamento/fila.json")
 EXCEL_COLUNA_CODIGO = 0  # coluna A
 EXCEL_COLUNA_NOME = 1    # coluna B
+MAX_TENTATIVAS = 3
+PAUSA_ENTRE_TENTATIVAS = 5  # segundos
 
 
 def _salvar(fila: dict) -> None:
@@ -68,9 +71,16 @@ def marcar_concluido(fila: dict, codigo_pessoa: int) -> None:
 def marcar_erro(fila: dict, codigo_pessoa: int, msg: str) -> None:
     for item in fila["items"]:
         if item["codigo_pessoa"] == codigo_pessoa:
-            item["status"] = "erro"
             item["tentativas"] += 1
             item["erro"] = msg
+            if item["tentativas"] < MAX_TENTATIVAS:
+                # ainda tem tentativas — mantém pendente após pausa
+                print(f"[FILA] Tentativa {item['tentativas']}/{MAX_TENTATIVAS} falhou para {codigo_pessoa}. Aguardando {PAUSA_ENTRE_TENTATIVAS}s...")
+                time.sleep(PAUSA_ENTRE_TENTATIVAS)
+                item["status"] = "pendente"
+            else:
+                item["status"] = "erro"
+                print(f"[FILA] {codigo_pessoa} esgotou {MAX_TENTATIVAS} tentativas. Marcado como erro.")
             break
     _salvar(fila)
 
