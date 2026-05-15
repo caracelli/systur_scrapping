@@ -1,0 +1,23 @@
+[OK] Credenciais carregadas.
+[INFO] Abrindo Edge...
+[INFO] Tentativa de login 1/2...
+[INFO] Efetuando login automatico no popup...
+[OK] Credenciais enviadas.
+[OK] Sessao renovada.
+[OK] Sessao ativa.
+[INFO] Navegando para Vendedores...
+[OK] Tela de Vendedores carregada.
+
+=== ELEMENTOS DO FORMULARIO ===
+  <input> name='prc_cd_cnpj' type='text' value=''
+  <input> name='prc_nm_fantasia' type='hidden' value=''
+  <input> name='prc_nm_pessoa' type='text' value=''
+  <input> name='prc_cd_consulta' type='hidden' value='4'
+  <input> name='prc_cd_pais' type='hidden' value=''
+  <input> name='prc_cd_estado' type='hidden' value=''
+  <input> name='prc_cd_cidade' type='hidden' value=''
+  <input> name='prc_cd_entidade' type='text' value=''
+  <input> name='prc_cd_pessoa' type='text' value=''
+  <input> name='prc_cd_promotor' type='hidden' value=''
+  <input> name='prc_evento' type='button' value='Consultar'
+  <input> name='prc_incluir' type='button' value='Incluir'
