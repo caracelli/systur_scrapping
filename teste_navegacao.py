@@ -15,32 +15,67 @@ sys.path.insert(0, "src")
 import sessao
 import time
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import WebDriverException, NoSuchElementException
 
-# 1. Abre e faz login
 driver = sessao.abrir()
 sessao.garantir_sessao(driver)
 print("[OK] Sessao ativa.\n")
 
-# 2. Lista os frames da pagina principal
-print("Frames encontrados na pagina:")
+# Lista frames disponíveis
+print("=== FRAMES ENCONTRADOS ===")
 frames = driver.find_elements(By.TAG_NAME, "frame")
 iframes = driver.find_elements(By.TAG_NAME, "iframe")
-for f in frames:
-    print(f"  <frame> name='{f.get_attribute('name')}' id='{f.get_attribute('id')}' src='{f.get_attribute('src')}'")
-for f in iframes:
-    print(f"  <iframe> name='{f.get_attribute('name')}' id='{f.get_attribute('id')}' src='{f.get_attribute('src')}'")
+todos = frames + iframes
+for i, f in enumerate(todos):
+    print(f"  [{i}] name='{f.get_attribute('name')}' id='{f.get_attribute('id')}'")
 
-# 3. Executa o JavaScript de navegacao
-print("\n[INFO] Executando navegacao para Vendedores...")
-driver.execute_script('open_html("pkg_gen_consulta_padrao.prc_inicial?prc_cd_consulta=4", "462")')
-time.sleep(3)
+print(f"\nTotal: {len(todos)} frame(s)\n")
 
-# 4. Lista frames novamente apos navegacao
-print("\nFrames apos navegacao:")
-frames = driver.find_elements(By.TAG_NAME, "frame")
-for f in frames:
-    print(f"  <frame> name='{f.get_attribute('name')}' id='{f.get_attribute('id')}' src='{f.get_attribute('src')}'")
+# Tenta executar o JS em cada frame
+JS = 'open_html("pkg_gen_consulta_padrao.prc_inicial?prc_cd_consulta=4", "462")'
+print("=== TENTANDO NAVEGACAO EM CADA FRAME ===")
 
-print("\n[INFO] Verifique se a tela de busca de Vendedores abriu no browser.")
-input("Pressione Enter para fechar...")
+navegou = False
+for i, f in enumerate(todos):
+    try:
+        driver.switch_to.frame(f)
+        driver.execute_script(JS)
+        time.sleep(2)
+        print(f"  [OK] JS executado no frame [{i}] name='{f.get_attribute('name')}'")
+        navegou = True
+        driver.switch_to.default_content()
+        break
+    except Exception as e:
+        print(f"  [FALHA] Frame [{i}]: {e}")
+        driver.switch_to.default_content()
+
+if not navegou:
+    # Tenta clique direto pelos IDs do menu
+    print("\n=== TENTANDO CLIQUE PELOS IDs DO MENU ===")
+    for i, f in enumerate(todos):
+        try:
+            driver.switch_to.frame(f)
+            el = driver.find_element(By.ID, "fd7")
+            print(f"  [OK] Elemento #fd7 encontrado no frame [{i}]")
+            el.click()
+            time.sleep(1)
+            el2 = driver.find_element(By.ID, "fd62")
+            el2.click()
+            time.sleep(1)
+            print(f"  [OK] Clicou em RH > Vendedores no frame [{i}]")
+            driver.switch_to.default_content()
+            navegou = True
+            break
+        except NoSuchElementException:
+            driver.switch_to.default_content()
+        except Exception as e:
+            print(f"  [FALHA] Frame [{i}]: {e}")
+            driver.switch_to.default_content()
+
+if navegou:
+    print("\n[OK] Navegacao concluida. Verifique se a tela de busca abriu.")
+else:
+    print("\n[ERRO] Nao foi possivel navegar. Verifique os frames e IDs.")
+
+input("\nPressione Enter para fechar...")
 driver.quit()
