@@ -2,70 +2,26 @@
 <xpaths>
 
   <!-- ============================================================
-       1. FRAMES DA PAGINA
-       F12 na pagina principal > aba Elements > procure tags <frame>
-       Copie o valor do atributo name ou id de cada frame
+       FRAMES (ja preenchidos — confirmados pelo log)
        ============================================================ -->
   <page name="frames">
-
-    <!-- frame do menu lateral -->
     <element id="frame_menu">FRM_MENU</element>
-
-    <!-- frame do conteudo principal -->
     <element id="frame_conteudo">FRM_PRINCIPAL</element>
-
   </page>
 
   <!-- ============================================================
-       2. NAVEGACAO NO MENU
-       Dentro do frame do menu, inspecione cada link
-       ============================================================ -->
-  <page name="menu">
-
-    <!-- Link "RH" no menu lateral -->
-    <element id="link_rh">//*[@id="fd7"]</element>
-
-    <!-- Link "Vendedores" (submenu dentro de RH) -->
-    <element id="link_vendedores_menu">//*[@id="fd62"]</element>
-
-    <!-- Link "Vendedores" (pagina final, abre o formulario) -->
-    <element id="link_vendedores_pagina">javascript:open_html("pkg_gen_consulta_padrao.prc_inicial?prc_cd_consulta=4%22,%20%22462%22)</element>
-
-  </page>
-
-  <!-- ============================================================
-       3. TELA DE BUSCA
-       Dentro do frame de conteudo, inspecione o formulario
+       TELA DE BUSCA
+       Inspecione o formulario no browser (F12) e preencha abaixo
        ============================================================ -->
   <page name="busca">
 
-    <!-- Input "Codigo Pessoa" -->
+    <!-- name ou id do input "Codigo Pessoa" -->
     <element id="campo_codigo_pessoa"></element>
 
-    <!-- Link ou botao "Consultar" -->
+    <!-- texto ou xpath do botao/link "Consultar" -->
     <element id="btn_consultar"></element>
 
-  </page>
-
-  <!-- ============================================================
-       4. TELA DE RESULTADOS
-       Dentro do frame de conteudo, inspecione a tabela de resultados
-       ============================================================ -->
-  <page name="resultados">
-
-    <!-- Linhas da tabela (tr com dados, sem cabecalho) -->
-    <element id="tabela_linhas"></element>
-
-    <!-- Colunas de cada linha (ja preenchidas — confirme a ordem) -->
-    <element id="col_situacao">./td[1]</element>
-    <element id="col_filial">./td[2]</element>
-    <element id="col_codigo">./td[3]</element>
-    <element id="col_pessoa">./td[4]</element>
-    <element id="col_nome">./td[5]</element>
-    <element id="col_cpf">./td[6]</element>
-    <element id="col_telefone">./td[7]</element>
-
-    <!-- Link "Voltar" -->
+    <!-- texto ou xpath do botao/link "Voltar" (na tela de resultados) -->
     <element id="btn_voltar"></element>
 
   </page>
