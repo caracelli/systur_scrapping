@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.edge.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -28,12 +28,12 @@ def conectar() -> webdriver.Chrome:
     options = Options()
     options.add_experimental_option("debuggerAddress", f"localhost:{DEBUG_PORT}")
     try:
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Edge(options=options)
         return driver
     except WebDriverException as e:
         raise RuntimeError(
-            "\n[ERRO] Não foi possível conectar ao Chrome.\n"
-            "Execute 'abrir_chrome.bat' primeiro, navegue até o SYSTUR e faça login.\n"
+            "\n[ERRO] Não foi possível conectar ao Edge.\n"
+            "Execute 'abrir_edge.bat' primeiro, navegue até o SYSTUR e faça login.\n"
         ) from e
 
 
