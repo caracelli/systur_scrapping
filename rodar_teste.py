@@ -2,12 +2,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-LOG = Path("logs/teste_sessao.log")
+TESTE = "teste_navegacao.py"
+LOG = Path("logs/teste_navegacao.log")
 LOG.parent.mkdir(exist_ok=True)
 
-print("Executando teste_sessao.py...")
+print(f"Executando {TESTE}...")
 resultado = subprocess.run(
-    [sys.executable, "teste_sessao.py"],
+    [sys.executable, TESTE],
     capture_output=True,
     text=True
 )
@@ -19,6 +20,6 @@ print(saida)
 
 print("Sincronizando log com GitHub...")
 subprocess.run(["git", "add", str(LOG)], check=True)
-subprocess.run(["git", "commit", "-m", "log: resultado do teste_sessao"], check=True)
+subprocess.run(["git", "commit", "-m", f"log: resultado do {TESTE}"], check=True)
 subprocess.run(["git", "push"], check=True)
 print("Pronto! Log enviado para analise.")
