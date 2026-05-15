@@ -8,11 +8,11 @@
        ============================================================ -->
   <page name="frames">
 
-    <!-- frame do menu lateral: //frame[@name='???'] -->
-    <element id="frame_menu"></element>
+    <!-- frame do menu lateral -->
+    <element id="frame_menu">FRM_MENU</element>
 
-    <!-- frame do conteudo principal: //frame[@name='???'] -->
-    <element id="frame_conteudo"></element>
+    <!-- frame do conteudo principal -->
+    <element id="frame_conteudo">FRM_PRINCIPAL</element>
 
   </page>
 
