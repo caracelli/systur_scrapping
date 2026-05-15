@@ -1,0 +1,24 @@
+[OK] Credenciais carregadas.
+[INFO] Abrindo Edge...
+[INFO] Tentativa de login 1/2...
+[INFO] Efetuando login automatico no popup...
+[OK] Credenciais enviadas.
+[OK] Sessao renovada.
+[OK] Sessao ativa.
+
+=== FRAMES ENCONTRADOS ===
+  [0] name='FRM_ESQUERDO' id=''
+  [1] name='FRM_CABECALHO' id=''
+  [2] name='FRM_MENU' id=''
+  [3] name='FRM_PRINCIPAL' id=''
+Total: 4 frame(s)
+
+=== TENTANDO NAVEGACAO VIA JAVASCRIPT ===
+  [INFO] open_html nao existe no frame 'FRM_ESQUERDO'
+  [INFO] open_html nao existe no frame 'FRM_CABECALHO'
+  [OK] open_html executado no frame 'FRM_MENU'
+
+[OK] Navegacao via JS concluida no frame 'FRM_MENU'.
+
+[INFO] URL atual: https://systur.cvc.com.br/pls/systur/pkg_html.prc_frame?p_chama_frame=S
+[INFO] Browser fechado.
