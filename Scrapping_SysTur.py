@@ -38,7 +38,16 @@ import saida as sa
 from selenium.common.exceptions import WebDriverException
 
 PASTA_ENTRADA = Path("entrada")
-HEADLESS = True  # False = mostra o Edge na tela | True = roda em segundo plano
+
+def ler_config() -> dict:
+    import xml.etree.ElementTree as ET
+    tree = ET.parse("config/config.xml")
+    root = tree.getroot()
+    return {
+        "headless": root.findtext("headless", "true").strip().lower() == "true",
+    }
+
+CONFIG = ler_config()
 
 
 def encontrar_excel() -> Path:
@@ -83,7 +92,7 @@ try:
 
     wb, ws, caminho_saida = sa.criar_arquivo()
 
-    driver = sessao.abrir(headless=HEADLESS)
+    driver = sessao.abrir(headless=CONFIG["headless"])
     sessao.garantir_sessao(driver)
     print("[OK] Sessao ativa.\n")
 

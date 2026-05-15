@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+
+  <!-- true = roda sem abrir janela | false = mostra o Edge na tela -->
+  <headless>true</headless>
+
+</config>
