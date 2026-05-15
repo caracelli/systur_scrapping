@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from selenium import webdriver
+from selenium.webdriver.edge.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -37,11 +38,19 @@ def carregar_credenciais() -> None:
     print("[OK] Credenciais carregadas.")
 
 
-def abrir() -> webdriver.Edge:
+def abrir(headless: bool = False) -> webdriver.Edge:
     carregar_credenciais()
-    print("[INFO] Abrindo Edge...")
-    driver = webdriver.Edge()
-    driver.maximize_window()
+    options = Options()
+    if headless:
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+        print("[INFO] Abrindo Edge em modo silencioso (sem janela)...")
+    else:
+        print("[INFO] Abrindo Edge...")
+    driver = webdriver.Edge(options=options)
+    if not headless:
+        driver.maximize_window()
     driver.get(URL_SYSTUR)
     return driver
 
