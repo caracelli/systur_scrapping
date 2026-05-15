@@ -45,6 +45,7 @@ def ler_config() -> dict:
     root = tree.getroot()
     return {
         "headless": root.findtext("headless", "true").strip().lower() == "true",
+        "limite": int(root.findtext("limite", "0").strip()),
     }
 
 CONFIG = ler_config()
@@ -101,8 +102,13 @@ try:
     # ──────────────────────────────────────────────
     # LOOP PRINCIPAL
     # ──────────────────────────────────────────────
+    limite = CONFIG["limite"]
+    if limite:
+        print(f"[INFO] Modo teste: processando ate {limite} item(ns).\n")
+
+    processados = 0
     item = fl.proximo(fila)
-    while item:
+    while item and (not limite or processados < limite):
         codigo = item["codigo_pessoa"]
         nome   = item["nome"]
         print(f"[FILA] {codigo} — {nome}")
@@ -131,6 +137,7 @@ try:
             except Exception:
                 pass
 
+        processados += 1
         print(f"  {fl.resumo(fila)}")
         item = fl.proximo(fila)
 
