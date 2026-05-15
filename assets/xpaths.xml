@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xpaths>
+
+  <!--
+    Verificação de sessão: elemento que indica que o usuário está logado.
+    Se este elemento NÃO existir na página, o scraper avisa o usuário para fazer login.
+  -->
+  <page name="verificacao_sessao">
+    <!-- Exemplo: <element id="indicador_logado">//span[@class='user-name']</element> -->
+  </page>
+
+  <page name="busca">
+    <!-- Exemplo: <element id="campo_data">//input[@name='data_ida']</element> -->
+  </page>
+
+  <page name="resultados">
+    <!-- Exemplo: <element id="lista_voos">//div[@class='flight-list']//tr</element> -->
+  </page>
+
+</xpaths>
