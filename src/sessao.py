@@ -11,7 +11,7 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 URL_SYSTUR = "https://systur.cvc.com.br/pls/systur/pkg_html.prc_frame?p_chama_frame=S"
 URL_SYSTUR_BASE = "systur.cvc.com.br"
 URL_POPUP_LOGIN = "p_tipo_acao=POPUP"
-CRED_PATH = Path("credenciais.xml")
+CRED_PATH = Path("config/credenciais.xml")
 
 # Credenciais carregadas uma vez e mantidas em memória durante toda a execução
 _usuario: str = ""

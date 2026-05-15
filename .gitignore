@@ -9,7 +9,8 @@ venv/
 credenciais.json
 
 # Saídas geradas
-saidas/
+saida/*.xlsx
+saida/*.xls
 
 # Fila de processamento (estado de execução — não versionar)
 processamento/

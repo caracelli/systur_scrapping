@@ -4,7 +4,7 @@ from pathlib import Path
 import openpyxl
 from openpyxl.styles import PatternFill, Font, Alignment
 
-PASTA_SAIDA = Path("saidas")
+PASTA_SAIDA = Path("saida")
 CABECALHOS = [
     "Codigo Pessoa", "Nome Entrada",
     "Situacao", "Filial", "Codigo", "Pessoa", "Nome Systur", "CPF", "Telefone"

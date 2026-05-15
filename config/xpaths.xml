@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xpaths>
+
+  <!-- ============================================================
+       FRAMES (ja preenchidos — confirmados pelo log)
+       ============================================================ -->
+  <page name="frames">
+    <element id="frame_menu">FRM_MENU</element>
+    <element id="frame_conteudo">FRM_PRINCIPAL</element>
+  </page>
+
+  <!-- ============================================================
+       TELA DE BUSCA
+       Inspecione o formulario no browser (F12) e preencha abaixo
+       ============================================================ -->
+  <page name="busca">
+
+    <!-- name ou id do input "Codigo Pessoa" -->
+    <element id="campo_codigo_pessoa">//*[@id="prc_cd_pessoa"]</element>
+
+    <!-- texto ou xpath do botao/link "Consultar" -->
+    <element id="btn_consultar">//*[@id="prc_evento"]</element>
+
+    <!-- texto ou xpath do botao/link "Voltar" (na tela de resultados) -->
+    <element id="btn_voltar">//*[@id="prc_voltar"]</element>
+
+  </page>
+
+</xpaths>
