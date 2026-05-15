@@ -51,12 +51,15 @@ def abrir() -> webdriver.Edge:
     return driver
 
 
-def _janela_popup(driver: webdriver.Edge) -> str | None:
+def _janela_popup(driver: webdriver.Edge) -> tuple[str | None, str]:
+    handle_principal = driver.current_window_handle
     for handle in driver.window_handles:
         driver.switch_to.window(handle)
         if URL_POPUP_LOGIN in driver.current_url:
-            return handle
-    return None
+            driver.switch_to.window(handle_principal)
+            return handle, handle_principal
+    driver.switch_to.window(handle_principal)
+    return None, handle_principal
 
 
 def _esta_logado(driver: webdriver.Edge) -> bool:
@@ -87,27 +90,30 @@ def _fazer_login_popup(driver: webdriver.Edge) -> None:
 
 
 def garantir_sessao(driver: webdriver.Edge) -> None:
-    # Aguarda até 10s para a página carregar
     time.sleep(2)
 
-    popup = _janela_popup(driver)
-    if popup:
+    handle_popup, handle_principal = _janela_popup(driver)
+    if handle_popup:
+        driver.switch_to.window(handle_popup)
         _fazer_login_popup(driver)
-        # Aguarda o popup fechar e a sessão ficar ativa
-        WebDriverWait(driver, 15).until(lambda d: len(d.window_handles) == 1)
-        driver.switch_to.window(driver.window_handles[0])
+        WebDriverWait(driver, 15).until(
+            lambda d: handle_popup not in d.window_handles
+        )
+        driver.switch_to.window(handle_principal)
         print("[OK] Login concluido.")
         return
 
     if not _esta_logado(driver):
-        # Navega para o SYSTUR e tenta de novo
         driver.get(URL_SYSTUR)
         time.sleep(3)
-        popup = _janela_popup(driver)
-        if popup:
+        handle_popup, handle_principal = _janela_popup(driver)
+        if handle_popup:
+            driver.switch_to.window(handle_popup)
             _fazer_login_popup(driver)
-            WebDriverWait(driver, 15).until(lambda d: len(d.window_handles) == 1)
-            driver.switch_to.window(driver.window_handles[0])
+            WebDriverWait(driver, 15).until(
+                lambda d: handle_popup not in d.window_handles
+            )
+            driver.switch_to.window(handle_principal)
             print("[OK] Login concluido.")
         else:
             raise RuntimeError("Sessao invalida e popup de login nao detectado.")

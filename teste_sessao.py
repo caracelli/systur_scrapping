@@ -27,19 +27,28 @@ driver.get(URL_SYSTUR)
 print("[INFO] Aguardando pagina carregar...")
 time.sleep(3)
 
-# Verifica se abriu popup de login
-janelas = driver.window_handles
-print(f"[INFO] Janelas abertas: {len(janelas)}")
+# Identifica handle do popup de login pelo URL
+handle_principal = driver.current_window_handle
+handle_popup = None
 
-if len(janelas) > 1:
+for handle in driver.window_handles:
+    driver.switch_to.window(handle)
+    if URL_POPUP in driver.current_url:
+        handle_popup = handle
+        break
+
+driver.switch_to.window(handle_principal)
+print(f"[INFO] Janelas abertas: {len(driver.window_handles)}")
+
+if handle_popup:
     print("[INFO] Popup de login detectado.")
     print("       Faca o login no popup que abriu.")
     print("       O script continua automaticamente apos fechar o popup.\n")
 
-    # Aguarda o popup fechar (até 5 minutos)
+    # Aguarda o popup específico fechar (até 5 minutos)
     for _ in range(100):
-        if len(driver.window_handles) == 1:
-            driver.switch_to.window(driver.window_handles[0])
+        if handle_popup not in driver.window_handles:
+            driver.switch_to.window(handle_principal)
             print("[OK] Login realizado! Sessao ativa.")
             print(f"     URL: {driver.current_url}")
             break
@@ -47,7 +56,6 @@ if len(janelas) > 1:
     else:
         print("[AVISO] Timeout aguardando login.")
 else:
-    # Sem popup — verifica se já está logado pela URL
     if URL_SYSTUR_BASE in driver.current_url:
         print("[OK] Sessao ja ativa, sem necessidade de login.")
         print(f"     URL: {driver.current_url}")
