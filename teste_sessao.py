@@ -13,14 +13,21 @@ options.add_experimental_option("debuggerAddress", f"localhost:{DEBUG_PORT}")
 
 try:
     driver = webdriver.Chrome(options=options)
-    url_atual = driver.current_url
-    print(f"[OK] Chrome conectado.")
-    print(f"     URL atual: {url_atual}")
+    print(f"[OK] Chrome conectado. Abas abertas: {len(driver.window_handles)}")
 
-    if URL_SYSTUR in url_atual:
-        print("[OK] SYSTUR está aberto no Chrome.")
+    aba_systur = None
+    for handle in driver.window_handles:
+        driver.switch_to.window(handle)
+        url = driver.current_url
+        print(f"     Aba: {url}")
+        if URL_SYSTUR in url:
+            aba_systur = handle
+
+    if aba_systur:
+        driver.switch_to.window(aba_systur)
+        print(f"\n[OK] SYSTUR encontrado e selecionado: {driver.current_url}")
     else:
-        print("[AVISO] SYSTUR NÃO está aberto. Navegue até o site e faça login.")
+        print("\n[AVISO] SYSTUR NÃO encontrado em nenhuma aba. Navegue até o site e faça login.")
 
 except WebDriverException as e:
     print("[ERRO] Não foi possível conectar ao Chrome.")
