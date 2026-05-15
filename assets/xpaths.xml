@@ -23,13 +23,13 @@
   <page name="menu">
 
     <!-- Link "RH" no menu lateral -->
-    <element id="link_rh"></element>
+    <element id="link_rh">//*[@id="fd7"]</element>
 
     <!-- Link "Vendedores" (submenu dentro de RH) -->
-    <element id="link_vendedores_menu"></element>
+    <element id="link_vendedores_menu">//*[@id="fd62"]</element>
 
     <!-- Link "Vendedores" (pagina final, abre o formulario) -->
-    <element id="link_vendedores_pagina"></element>
+    <element id="link_vendedores_pagina">javascript:open_html("pkg_gen_consulta_padrao.prc_inicial?prc_cd_consulta=4%22,%20%22462%22)</element>
 
   </page>
 
