@@ -1,20 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xpaths>
 
-  <!--
-    Verificação de sessão: elemento que indica que o usuário está logado.
-    Se este elemento NÃO existir na página, o scraper avisa o usuário para fazer login.
-  -->
+  <!-- ============================================================
+       1. VERIFICAÇÃO DE SESSÃO
+       Inspecione o menu lateral esquerdo (F12 na página logada)
+       ============================================================ -->
   <page name="verificacao_sessao">
-    <!-- Exemplo: <element id="indicador_logado">//span[@class='user-name']</element> -->
+
+    <!-- Frame que contém o menu lateral (ex: //frame[@name='menu']) -->
+    <element id="frame_menu"></element>
+
+    <!-- Qualquer elemento visível SOMENTE quando logado dentro do menu
+         Sugestão: o texto "Último Acesso" ou o item "MATRIZ CORPP132336"
+         Ex: //td[contains(text(),'ltimo Acesso')] -->
+    <element id="indicador_logado"></element>
+
+    <!-- Frame que contém o conteúdo principal (formulários e resultados) -->
+    <element id="frame_conteudo"></element>
+
   </page>
 
+  <!-- ============================================================
+       2. TELA DE BUSCA (Formulário Vendedores)
+       Inspecione os campos na tela de busca
+       ============================================================ -->
   <page name="busca">
-    <!-- Exemplo: <element id="campo_data">//input[@name='data_ida']</element> -->
+
+    <!-- Input do campo "Codigo Pessoa"
+         Ex: //input[@name='p_cod_pessoa'] -->
+    <element id="campo_codigo_pessoa"></element>
+
+    <!-- Link ou botão "Consultar"
+         Ex: //a[normalize-space()='Consultar'] -->
+    <element id="btn_consultar"></element>
+
   </page>
 
+  <!-- ============================================================
+       3. TELA DE RESULTADOS
+       Inspecione a tabela de resultados após clicar em Consultar
+       ============================================================ -->
   <page name="resultados">
-    <!-- Exemplo: <element id="lista_voos">//div[@class='flight-list']//tr</element> -->
+
+    <!-- Todas as linhas de dados da tabela (excluindo cabeçalho)
+         Ex: //table//tr[td] -->
+    <element id="tabela_linhas"></element>
+
+    <!-- Colunas relativas a cada linha (./td[N] ou ./td[@class='...']) -->
+    <element id="col_situacao">./td[1]</element>
+    <element id="col_filial">./td[2]</element>
+    <element id="col_codigo">./td[3]</element>
+    <element id="col_pessoa">./td[4]</element>
+    <element id="col_nome">./td[5]</element>
+    <element id="col_cpf">./td[6]</element>
+    <element id="col_telefone">./td[7]</element>
+
+    <!-- Link "Voltar"
+         Ex: //a[normalize-space()='Voltar'] -->
+    <element id="btn_voltar"></element>
+
   </page>
 
 </xpaths>
