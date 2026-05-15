@@ -35,6 +35,7 @@ import navegacao
 import consulta as cons
 import fila as fl
 import saida as sa
+import sincronizar as sync
 from selenium.common.exceptions import WebDriverException
 
 PASTA_ENTRADA = Path("entrada")
@@ -152,6 +153,9 @@ try:
     print(f"  Saida: {caminho_saida.name}")
     print(f"  {fl.resumo(fila)}")
     print("=" * 55)
+
+    caminho_log = sync.escrever_log(fila, caminho_saida, excel_entrada)
+    sync.sincronizar_git(caminho_log)
 
 finally:
     restaurar_hibernacao()
