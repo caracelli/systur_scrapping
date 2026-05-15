@@ -3,13 +3,10 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from selenium import webdriver
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.edge.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 URL_SYSTUR = "https://systur.cvc.com.br/pls/systur/pkg_html.prc_frame?p_chama_frame=S"
 URL_SYSTUR_BASE = "systur.cvc.com.br"
@@ -28,8 +25,7 @@ def _xpath(page: str, element_id: str) -> str:
 
 def abrir() -> webdriver.Edge:
     print("[INFO] Abrindo Edge...")
-    service = Service(EdgeChromiumDriverManager().install())
-    driver = webdriver.Edge(service=service)
+    driver = webdriver.Edge()
     driver.maximize_window()
     driver.get(URL_SYSTUR)
     return driver

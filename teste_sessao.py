@@ -2,7 +2,7 @@ import sys
 import subprocess
 
 def garantir_dependencias():
-    for pacote in ["selenium", "webdriver-manager", "openpyxl"]:
+    for pacote in ["selenium", "openpyxl"]:
         try:
             __import__(pacote.replace("-", "_"))
         except ImportError:
@@ -14,16 +14,13 @@ garantir_dependencias()
 
 import time
 from selenium import webdriver
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.edge.service import Service
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 URL_SYSTUR = "https://systur.cvc.com.br/pls/systur/pkg_html.prc_frame?p_chama_frame=S"
 URL_SYSTUR_BASE = "systur.cvc.com.br"
 
 print("[INFO] Abrindo Edge...")
-service = Service(EdgeChromiumDriverManager().install())
-driver = webdriver.Edge(service=service)
+# Selenium 4 localiza o driver automaticamente sem precisar de internet
+driver = webdriver.Edge()
 driver.maximize_window()
 driver.get(URL_SYSTUR)
 
@@ -32,10 +29,8 @@ print("  Faça login no SYSTUR e aguarde...")
 print("  O script continua automaticamente após o login.")
 print("=" * 52 + "\n")
 
-# Aguarda até detectar que está logado (até 5 minutos)
 for _ in range(100):
-    if URL_SYSTUR_BASE in driver.current_url and "login" not in driver.current_url.lower():
-        # Verifica se o conteúdo da página indica sessão ativa
+    if URL_SYSTUR_BASE in driver.current_url:
         fonte = driver.page_source
         if "ltimo Acesso" in fonte or "Finalizar" in fonte:
             print("[OK] Login detectado! Sessão ativa.")
