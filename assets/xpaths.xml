@@ -2,75 +2,61 @@
 <xpaths>
 
   <!-- ============================================================
-       1. TELA DE LOGIN
-       Inspecione os campos na tela de login do SYSTUR
+       1. FRAMES DA PAGINA
+       F12 na pagina principal > aba Elements > procure tags <frame>
+       Copie o valor do atributo name ou id de cada frame
        ============================================================ -->
-  <page name="login">
+  <page name="frames">
 
-    <!-- Elemento que indica que a tela de login está aberta
-         Ex: //input[@name='p_username'] ou //form[@name='login_form'] -->
-    <element id="indicador_login"></element>
-
-    <!-- Input do usuário
-         Ex: //input[@name='p_username'] -->
-    <element id="campo_usuario"></element>
-
-    <!-- Input da senha
-         Ex: //input[@name='p_password'] -->
-    <element id="campo_senha"></element>
-
-    <!-- Botão ou link de entrar
-         Ex: //input[@type='submit'] ou //button[contains(.,'Entrar')] -->
-    <element id="btn_entrar"></element>
-
-  </page>
-
-  <!-- ============================================================
-       2. VERIFICAÇÃO DE SESSÃO
-       Inspecione o menu lateral esquerdo (F12 na página logada)
-       ============================================================ -->
-  <page name="verificacao_sessao">
-
-    <!-- Frame que contém o menu lateral (ex: //frame[@name='menu']) -->
+    <!-- frame do menu lateral: //frame[@name='???'] -->
     <element id="frame_menu"></element>
 
-    <!-- Qualquer elemento visível SOMENTE quando logado dentro do menu
-         Sugestão: o texto "Último Acesso" ou o item "MATRIZ CORPP132336"
-         Ex: //td[contains(text(),'ltimo Acesso')] -->
-    <element id="indicador_logado"></element>
-
-    <!-- Frame que contém o conteúdo principal (formulários e resultados) -->
+    <!-- frame do conteudo principal: //frame[@name='???'] -->
     <element id="frame_conteudo"></element>
 
   </page>
 
   <!-- ============================================================
-       3. TELA DE BUSCA (Formulário Vendedores)
-       Inspecione os campos na tela de busca
+       2. NAVEGACAO NO MENU
+       Dentro do frame do menu, inspecione cada link
+       ============================================================ -->
+  <page name="menu">
+
+    <!-- Link "RH" no menu lateral -->
+    <element id="link_rh"></element>
+
+    <!-- Link "Vendedores" (submenu dentro de RH) -->
+    <element id="link_vendedores_menu"></element>
+
+    <!-- Link "Vendedores" (pagina final, abre o formulario) -->
+    <element id="link_vendedores_pagina"></element>
+
+  </page>
+
+  <!-- ============================================================
+       3. TELA DE BUSCA
+       Dentro do frame de conteudo, inspecione o formulario
        ============================================================ -->
   <page name="busca">
 
-    <!-- Input do campo "Codigo Pessoa"
-         Ex: //input[@name='p_cod_pessoa'] -->
+    <!-- Input "Codigo Pessoa" -->
     <element id="campo_codigo_pessoa"></element>
 
-    <!-- Link ou botão "Consultar"
-         Ex: //a[normalize-space()='Consultar'] -->
+    <!-- Link ou botao "Consultar" -->
     <element id="btn_consultar"></element>
 
   </page>
 
   <!-- ============================================================
        4. TELA DE RESULTADOS
-       Inspecione a tabela de resultados após clicar em Consultar
+       Dentro do frame de conteudo, inspecione a tabela de resultados
        ============================================================ -->
   <page name="resultados">
 
-    <!-- Todas as linhas de dados da tabela (excluindo cabeçalho)
-         Ex: //table//tr[td] -->
+    <!-- Linhas da tabela (tr com dados, sem cabecalho) -->
     <element id="tabela_linhas"></element>
 
-    <!-- Colunas relativas a cada linha (./td[N] ou ./td[@class='...']) -->
+    <!-- Colunas de cada linha (ja preenchidas — confirme a ordem) -->
     <element id="col_situacao">./td[1]</element>
     <element id="col_filial">./td[2]</element>
     <element id="col_codigo">./td[3]</element>
@@ -79,8 +65,7 @@
     <element id="col_cpf">./td[6]</element>
     <element id="col_telefone">./td[7]</element>
 
-    <!-- Link "Voltar"
-         Ex: //a[normalize-space()='Voltar'] -->
+    <!-- Link "Voltar" -->
     <element id="btn_voltar"></element>
 
   </page>
