@@ -13,8 +13,13 @@ URL_SYSTUR_BASE = "systur.cvc.com.br"
 URL_POPUP_LOGIN = "p_tipo_acao=POPUP"
 CRED_PATH = Path("credenciais.xml")
 
+# Credenciais carregadas uma vez e mantidas em memória durante toda a execução
+_usuario: str = ""
+_senha: str = ""
 
-def _credenciais() -> tuple[str, str]:
+
+def carregar_credenciais() -> None:
+    global _usuario, _senha
     if not CRED_PATH.exists():
         raise FileNotFoundError(
             "Arquivo credenciais.xml não encontrado.\n"
@@ -22,17 +27,18 @@ def _credenciais() -> tuple[str, str]:
         )
     tree = ET.parse(CRED_PATH)
     root = tree.getroot()
-    usuario = root.findtext("usuario", "").strip()
-    senha = root.findtext("senha", "").strip()
-    if not usuario or not senha or usuario == "SEU_USUARIO":
+    _usuario = root.findtext("usuario", "").strip()
+    _senha = root.findtext("senha", "").strip()
+    if not _usuario or not _senha or _usuario == "SEU_USUARIO":
         raise ValueError(
             "Credenciais em branco ou não preenchidas.\n"
             "Edite o arquivo credenciais.xml e preencha usuario e senha."
         )
-    return usuario, senha
+    print("[OK] Credenciais carregadas.")
 
 
 def abrir() -> webdriver.Edge:
+    carregar_credenciais()
     print("[INFO] Abrindo Edge...")
     driver = webdriver.Edge()
     driver.maximize_window()
@@ -56,15 +62,16 @@ def _janela_popup(driver: webdriver.Edge) -> tuple[str | None, str]:
 
 
 def _fazer_login_popup(driver: webdriver.Edge) -> None:
-    usuario, senha = _credenciais()
+    if not _usuario or not _senha:
+        raise RuntimeError("Credenciais não carregadas. Chame carregar_credenciais() antes de abrir o browser.")
     print("[INFO] Efetuando login automatico no popup...")
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, "//input[@type='text']"))
     )
     driver.find_element(By.XPATH, "//input[@type='text']").clear()
-    driver.find_element(By.XPATH, "//input[@type='text']").send_keys(usuario)
+    driver.find_element(By.XPATH, "//input[@type='text']").send_keys(_usuario)
     driver.find_element(By.XPATH, "//input[@type='password']").clear()
-    driver.find_element(By.XPATH, "//input[@type='password']").send_keys(senha)
+    driver.find_element(By.XPATH, "//input[@type='password']").send_keys(_senha)
     driver.find_element(By.XPATH, "//input[@value='Login']").click()
     print("[OK] Credenciais enviadas.")
 
