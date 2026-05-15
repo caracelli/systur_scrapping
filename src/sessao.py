@@ -66,12 +66,12 @@ def _fazer_login_popup(driver: webdriver.Edge) -> None:
         raise RuntimeError("Credenciais não carregadas. Chame carregar_credenciais() antes de abrir o browser.")
     print("[INFO] Efetuando login automatico no popup...")
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//input[@type='text']"))
+        EC.presence_of_element_located((By.NAME, "p_usuario"))
     )
-    driver.find_element(By.XPATH, "//input[@type='text']").clear()
-    driver.find_element(By.XPATH, "//input[@type='text']").send_keys(_usuario)
-    driver.find_element(By.XPATH, "//input[@type='password']").clear()
-    driver.find_element(By.XPATH, "//input[@type='password']").send_keys(_senha)
+    driver.find_element(By.NAME, "p_usuario").clear()
+    driver.find_element(By.NAME, "p_usuario").send_keys(_usuario)
+    driver.find_element(By.NAME, "p_senha").clear()
+    driver.find_element(By.NAME, "p_senha").send_keys(_senha)
     driver.find_element(By.XPATH, "//input[@value='Login']").click()
     print("[OK] Credenciais enviadas.")
 
