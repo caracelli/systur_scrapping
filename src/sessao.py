@@ -76,20 +76,36 @@ def _fazer_login_popup(driver: webdriver.Edge) -> None:
     print("[OK] Credenciais enviadas.")
 
 
-def _resolver_popup(driver: webdriver.Edge) -> bool:
-    """Verifica se há popup de login, faz login e retorna True se resolveu."""
+def _resolver_popup(driver: webdriver.Edge, tentativas: int = 2) -> bool:
+    """Verifica se há popup de login, tenta fazer login até `tentativas` vezes.
+    Fecha o browser e encerra o processo se todas as tentativas falharem."""
     handle_popup, handle_atual = _janela_popup(driver)
     if not handle_popup:
         return False
 
-    driver.switch_to.window(handle_popup)
-    _fazer_login_popup(driver)
-    WebDriverWait(driver, 15).until(
-        lambda d: handle_popup not in d.window_handles
-    )
-    driver.switch_to.window(handle_atual)
-    print("[OK] Sessao renovada.")
-    return True
+    for tentativa in range(1, tentativas + 1):
+        try:
+            print(f"[INFO] Tentativa de login {tentativa}/{tentativas}...")
+            driver.switch_to.window(handle_popup)
+            _fazer_login_popup(driver)
+            WebDriverWait(driver, 15).until(
+                lambda d: handle_popup not in d.window_handles
+            )
+            driver.switch_to.window(handle_atual)
+            print("[OK] Sessao renovada.")
+            return True
+        except Exception as e:
+            print(f"[ERRO] Tentativa {tentativa} falhou: {e}")
+            if tentativa < tentativas:
+                time.sleep(3)
+
+    print("[ERRO] Login falhou apos todas as tentativas. Encerrando...")
+    try:
+        driver.quit()
+    except Exception:
+        pass
+    import sys
+    sys.exit(1)
 
 
 def garantir_sessao(driver: webdriver.Edge) -> None:
