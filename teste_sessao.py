@@ -1,4 +1,18 @@
 import sys
+import subprocess
+
+def garantir_dependencias():
+    pacotes = ["selenium", "webdriver-manager", "openpyxl"]
+    for pacote in pacotes:
+        try:
+            __import__(pacote.replace("-", "_"))
+        except ImportError:
+            print(f"[INFO] Instalando {pacote}...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pacote, "-q"])
+            print(f"[OK] {pacote} instalado.")
+
+garantir_dependencias()
+
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
 from selenium.common.exceptions import WebDriverException
@@ -13,7 +27,7 @@ options.add_experimental_option("debuggerAddress", f"localhost:{DEBUG_PORT}")
 
 try:
     driver = webdriver.Edge(options=options)
-    print(f"[OK] Chrome conectado. Abas abertas: {len(driver.window_handles)}")
+    print(f"[OK] Edge conectado. Abas abertas: {len(driver.window_handles)}")
 
     aba_systur = None
     for handle in driver.window_handles:
