@@ -2,8 +2,7 @@ import sys
 import subprocess
 
 def garantir_dependencias():
-    pacotes = ["selenium", "webdriver-manager", "openpyxl"]
-    for pacote in pacotes:
+    for pacote in ["selenium", "webdriver-manager", "openpyxl"]:
         try:
             __import__(pacote.replace("-", "_"))
         except ImportError:
@@ -13,37 +12,38 @@ def garantir_dependencias():
 
 garantir_dependencias()
 
+import time
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options
-from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.edge.service import Service
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
-DEBUG_PORT = 9222
-URL_SYSTUR = "systur.cvc.com.br"
+URL_SYSTUR = "https://systur.cvc.com.br/pls/systur/pkg_html.prc_frame?p_chama_frame=S"
+URL_SYSTUR_BASE = "systur.cvc.com.br"
 
-print("Tentando conectar ao Edge na porta 9222...")
+print("[INFO] Abrindo Edge...")
+service = Service(EdgeChromiumDriverManager().install())
+driver = webdriver.Edge(service=service)
+driver.maximize_window()
+driver.get(URL_SYSTUR)
 
-options = Options()
-options.add_experimental_option("debuggerAddress", f"localhost:{DEBUG_PORT}")
+print("\n" + "=" * 52)
+print("  Faça login no SYSTUR e aguarde...")
+print("  O script continua automaticamente após o login.")
+print("=" * 52 + "\n")
 
-try:
-    driver = webdriver.Edge(options=options)
-    print(f"[OK] Edge conectado. Abas abertas: {len(driver.window_handles)}")
+# Aguarda até detectar que está logado (até 5 minutos)
+for _ in range(100):
+    if URL_SYSTUR_BASE in driver.current_url and "login" not in driver.current_url.lower():
+        # Verifica se o conteúdo da página indica sessão ativa
+        fonte = driver.page_source
+        if "ltimo Acesso" in fonte or "Finalizar" in fonte:
+            print("[OK] Login detectado! Sessão ativa.")
+            print(f"     URL: {driver.current_url}")
+            break
+    time.sleep(3)
+else:
+    print("[AVISO] Timeout aguardando login.")
 
-    aba_systur = None
-    for handle in driver.window_handles:
-        driver.switch_to.window(handle)
-        url = driver.current_url
-        print(f"     Aba: {url}")
-        if URL_SYSTUR in url:
-            aba_systur = handle
-
-    if aba_systur:
-        driver.switch_to.window(aba_systur)
-        print(f"\n[OK] SYSTUR encontrado e selecionado: {driver.current_url}")
-    else:
-        print("\n[AVISO] SYSTUR NÃO encontrado em nenhuma aba. Navegue até o site e faça login.")
-
-except WebDriverException as e:
-    print("[ERRO] Não foi possível conectar ao Edge.")
-    print("       Execute 'abrir_edge.bat' primeiro.")
-    sys.exit(1)
+input("\nPressione Enter para fechar o browser...")
+driver.quit()
