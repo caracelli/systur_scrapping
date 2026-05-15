@@ -85,6 +85,15 @@ def marcar_erro(fila: dict, codigo_pessoa: int, msg: str) -> None:
     _salvar(fila)
 
 
+def marcar_sem_resultado(fila: dict, codigo_pessoa: int) -> None:
+    for item in fila["items"]:
+        if item["codigo_pessoa"] == codigo_pessoa:
+            item["status"] = "sem_resultado"
+            item["erro"] = None
+            break
+    _salvar(fila)
+
+
 def recolocar_erros(fila: dict) -> int:
     """Recoloca itens com erro de volta para pendente (para nova tentativa)."""
     count = 0
@@ -102,4 +111,5 @@ def resumo(fila: dict) -> str:
     concluidos = sum(1 for i in fila["items"] if i["status"] == "concluido")
     erros = sum(1 for i in fila["items"] if i["status"] == "erro")
     pendentes = sum(1 for i in fila["items"] if i["status"] == "pendente")
-    return f"Total: {total} | Concluídos: {concluidos} | Pendentes: {pendentes} | Erros: {erros}"
+    sem_resultado = sum(1 for i in fila["items"] if i["status"] == "sem_resultado")
+    return f"Total: {total} | Concluídos: {concluidos} | Pendentes: {pendentes} | Sem resultado: {sem_resultado} | Erros: {erros}"

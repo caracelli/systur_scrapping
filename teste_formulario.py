@@ -61,12 +61,20 @@ time.sleep(3)
 print("\n=== RESULTADO DA CONSULTA ===")
 tabelas = driver.find_elements(By.TAG_NAME, "table")
 print(f"Tabelas encontradas: {len(tabelas)}")
+
+dados = []
 for i, tabela in enumerate(tabelas):
     linhas = tabela.find_elements(By.TAG_NAME, "tr")
     for j, linha in enumerate(linhas):
         celulas = [c.text.strip() for c in linha.find_elements(By.TAG_NAME, "td")]
         if any(celulas):
+            dados.append(celulas)
             print(f"  [{i}][{j}] {celulas}")
+
+if not dados:
+    print("[INFO] Sem resultados para este codigo. Seguindo para o proximo.")
+else:
+    print(f"[OK] {len(dados)} linha(s) encontrada(s).")
 
 # Clica Voltar
 print("\n[INFO] Clicando Voltar...")
