@@ -6,10 +6,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 
 URL_SYSTUR = "https://systur.cvc.com.br/pls/systur/pkg_html.prc_frame?p_chama_frame=S"
 URL_SYSTUR_BASE = "systur.cvc.com.br"
+URL_POPUP_LOGIN = "p_tipo_acao=POPUP"
 XPATHS_PATH = Path("assets/xpaths.xml")
 CRED_PATH = Path("credenciais.xml")
 
@@ -34,8 +35,11 @@ def _credenciais() -> tuple[str, str]:
     root = tree.getroot()
     usuario = root.findtext("usuario", "").strip()
     senha = root.findtext("senha", "").strip()
-    if not usuario or not senha:
-        raise ValueError("Preencha usuario e senha no credenciais.xml.")
+    if not usuario or not senha or usuario == "SEU_USUARIO":
+        raise ValueError(
+            "Credenciais em branco ou não preenchidas.\n"
+            "Edite o arquivo credenciais.xml e preencha usuario e senha."
+        )
     return usuario, senha
 
 
@@ -47,18 +51,17 @@ def abrir() -> webdriver.Edge:
     return driver
 
 
-def _esta_na_tela_login(driver: webdriver.Edge) -> bool:
-    try:
-        xpath = _xpath("login", "indicador_login")
-        if xpath:
-            driver.find_element(By.XPATH, xpath)
-            return True
-    except (NoSuchElementException, ValueError):
-        pass
-    return False
+def _janela_popup(driver: webdriver.Edge) -> str | None:
+    for handle in driver.window_handles:
+        driver.switch_to.window(handle)
+        if URL_POPUP_LOGIN in driver.current_url:
+            return handle
+    return None
 
 
 def _esta_logado(driver: webdriver.Edge) -> bool:
+    janela_principal = driver.window_handles[0]
+    driver.switch_to.window(janela_principal)
     if URL_SYSTUR_BASE not in driver.current_url:
         return False
     try:
@@ -68,33 +71,43 @@ def _esta_logado(driver: webdriver.Edge) -> bool:
         return False
 
 
-def _fazer_login(driver: webdriver.Edge) -> None:
+def _fazer_login_popup(driver: webdriver.Edge) -> None:
     usuario, senha = _credenciais()
-    print("[INFO] Realizando login automatico...")
-    try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, _xpath("login", "campo_usuario")))
-        )
-        driver.find_element(By.XPATH, _xpath("login", "campo_usuario")).send_keys(usuario)
-        driver.find_element(By.XPATH, _xpath("login", "campo_senha")).send_keys(senha)
-        driver.find_element(By.XPATH, _xpath("login", "btn_entrar")).click()
-        print("[OK] Login enviado. Aguardando redirecionamento...")
-        WebDriverWait(driver, 15).until(lambda d: _esta_logado(d))
-        print("[OK] Login realizado com sucesso.")
-    except TimeoutException:
-        raise RuntimeError("Falha no login: timeout aguardando redirecionamento apos login.")
+    print("[INFO] Popup de login detectado. Realizando login automatico...")
+
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//input[@type='text']"))
+    )
+    driver.find_element(By.XPATH, "//input[@type='text']").clear()
+    driver.find_element(By.XPATH, "//input[@type='text']").send_keys(usuario)
+    driver.find_element(By.XPATH, "//input[@type='password']").clear()
+    driver.find_element(By.XPATH, "//input[@type='password']").send_keys(senha)
+    driver.find_element(By.XPATH, "//input[@value='Login']").click()
+    print("[OK] Credenciais enviadas.")
 
 
 def garantir_sessao(driver: webdriver.Edge) -> None:
-    if _esta_logado(driver):
-        return
-    if _esta_na_tela_login(driver):
-        _fazer_login(driver)
-        return
-    # Navega para o SYSTUR e tenta login
-    driver.get(URL_SYSTUR)
+    # Aguarda até 10s para a página carregar
     time.sleep(2)
-    if _esta_na_tela_login(driver):
-        _fazer_login(driver)
-    elif not _esta_logado(driver):
-        raise RuntimeError("Nao foi possivel detectar o estado da sessao. Verifique os XPaths.")
+
+    popup = _janela_popup(driver)
+    if popup:
+        _fazer_login_popup(driver)
+        # Aguarda o popup fechar e a sessão ficar ativa
+        WebDriverWait(driver, 15).until(lambda d: len(d.window_handles) == 1)
+        driver.switch_to.window(driver.window_handles[0])
+        print("[OK] Login concluido.")
+        return
+
+    if not _esta_logado(driver):
+        # Navega para o SYSTUR e tenta de novo
+        driver.get(URL_SYSTUR)
+        time.sleep(3)
+        popup = _janela_popup(driver)
+        if popup:
+            _fazer_login_popup(driver)
+            WebDriverWait(driver, 15).until(lambda d: len(d.window_handles) == 1)
+            driver.switch_to.window(driver.window_handles[0])
+            print("[OK] Login concluido.")
+        else:
+            raise RuntimeError("Sessao invalida e popup de login nao detectado.")
