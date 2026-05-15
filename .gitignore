@@ -7,6 +7,7 @@ venv/
 # Credenciais
 .env
 credenciais.json
+credenciais.xml
 
 # Saídas geradas
 saidas/

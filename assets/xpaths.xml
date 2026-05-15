@@ -2,7 +2,31 @@
 <xpaths>
 
   <!-- ============================================================
-       1. VERIFICAÇÃO DE SESSÃO
+       1. TELA DE LOGIN
+       Inspecione os campos na tela de login do SYSTUR
+       ============================================================ -->
+  <page name="login">
+
+    <!-- Elemento que indica que a tela de login está aberta
+         Ex: //input[@name='p_username'] ou //form[@name='login_form'] -->
+    <element id="indicador_login"></element>
+
+    <!-- Input do usuário
+         Ex: //input[@name='p_username'] -->
+    <element id="campo_usuario"></element>
+
+    <!-- Input da senha
+         Ex: //input[@name='p_password'] -->
+    <element id="campo_senha"></element>
+
+    <!-- Botão ou link de entrar
+         Ex: //input[@type='submit'] ou //button[contains(.,'Entrar')] -->
+    <element id="btn_entrar"></element>
+
+  </page>
+
+  <!-- ============================================================
+       2. VERIFICAÇÃO DE SESSÃO
        Inspecione o menu lateral esquerdo (F12 na página logada)
        ============================================================ -->
   <page name="verificacao_sessao">
@@ -21,7 +45,7 @@
   </page>
 
   <!-- ============================================================
-       2. TELA DE BUSCA (Formulário Vendedores)
+       3. TELA DE BUSCA (Formulário Vendedores)
        Inspecione os campos na tela de busca
        ============================================================ -->
   <page name="busca">
@@ -37,7 +61,7 @@
   </page>
 
   <!-- ============================================================
-       3. TELA DE RESULTADOS
+       4. TELA DE RESULTADOS
        Inspecione a tabela de resultados após clicar em Consultar
        ============================================================ -->
   <page name="resultados">
