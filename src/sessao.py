@@ -6,23 +6,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException
 
 URL_SYSTUR = "https://systur.cvc.com.br/pls/systur/pkg_html.prc_frame?p_chama_frame=S"
 URL_SYSTUR_BASE = "systur.cvc.com.br"
 URL_POPUP_LOGIN = "p_tipo_acao=POPUP"
-XPATHS_PATH = Path("assets/xpaths.xml")
 CRED_PATH = Path("credenciais.xml")
-
-
-def _xpath(page: str, element_id: str) -> str:
-    tree = ET.parse(XPATHS_PATH)
-    for page_node in tree.getroot().findall("page"):
-        if page_node.get("name") == page:
-            for elem in page_node.findall("element"):
-                if elem.get("id") == element_id:
-                    return elem.text.strip()
-    raise ValueError(f"XPath não encontrado: {page}/{element_id}")
 
 
 def _credenciais() -> tuple[str, str]:
@@ -52,32 +41,23 @@ def abrir() -> webdriver.Edge:
 
 
 def _janela_popup(driver: webdriver.Edge) -> tuple[str | None, str]:
-    handle_principal = driver.current_window_handle
+    """Retorna (handle_popup, handle_atual). handle_popup é None se não houver popup."""
+    handle_atual = driver.current_window_handle
     for handle in driver.window_handles:
-        driver.switch_to.window(handle)
-        if URL_POPUP_LOGIN in driver.current_url:
-            driver.switch_to.window(handle_principal)
-            return handle, handle_principal
-    driver.switch_to.window(handle_principal)
-    return None, handle_principal
-
-
-def _esta_logado(driver: webdriver.Edge) -> bool:
-    janela_principal = driver.window_handles[0]
-    driver.switch_to.window(janela_principal)
-    if URL_SYSTUR_BASE not in driver.current_url:
-        return False
-    try:
-        fonte = driver.page_source
-        return "ltimo Acesso" in fonte or "Finalizar" in fonte
-    except Exception:
-        return False
+        try:
+            driver.switch_to.window(handle)
+            if URL_POPUP_LOGIN in driver.current_url:
+                driver.switch_to.window(handle_atual)
+                return handle, handle_atual
+        except WebDriverException:
+            continue
+    driver.switch_to.window(handle_atual)
+    return None, handle_atual
 
 
 def _fazer_login_popup(driver: webdriver.Edge) -> None:
     usuario, senha = _credenciais()
-    print("[INFO] Popup de login detectado. Realizando login automatico...")
-
+    print("[INFO] Efetuando login automatico no popup...")
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, "//input[@type='text']"))
     )
@@ -89,31 +69,48 @@ def _fazer_login_popup(driver: webdriver.Edge) -> None:
     print("[OK] Credenciais enviadas.")
 
 
-def garantir_sessao(driver: webdriver.Edge) -> None:
-    time.sleep(2)
+def _resolver_popup(driver: webdriver.Edge) -> bool:
+    """Verifica se há popup de login, faz login e retorna True se resolveu."""
+    handle_popup, handle_atual = _janela_popup(driver)
+    if not handle_popup:
+        return False
 
-    handle_popup, handle_principal = _janela_popup(driver)
-    if handle_popup:
-        driver.switch_to.window(handle_popup)
-        _fazer_login_popup(driver)
-        WebDriverWait(driver, 15).until(
-            lambda d: handle_popup not in d.window_handles
-        )
-        driver.switch_to.window(handle_principal)
-        print("[OK] Login concluido.")
+    driver.switch_to.window(handle_popup)
+    _fazer_login_popup(driver)
+    WebDriverWait(driver, 15).until(
+        lambda d: handle_popup not in d.window_handles
+    )
+    driver.switch_to.window(handle_atual)
+    print("[OK] Sessao renovada.")
+    return True
+
+
+def garantir_sessao(driver: webdriver.Edge) -> None:
+    """Chame antes de cada operação crítica. Faz login automático se necessário."""
+    time.sleep(1)
+
+    if _resolver_popup(driver):
         return
 
-    if not _esta_logado(driver):
+    # Sem popup — verifica se está no domínio correto
+    if URL_SYSTUR_BASE not in driver.current_url:
+        print("[INFO] Fora do SYSTUR. Navegando de volta...")
         driver.get(URL_SYSTUR)
         time.sleep(3)
-        handle_popup, handle_principal = _janela_popup(driver)
-        if handle_popup:
-            driver.switch_to.window(handle_popup)
-            _fazer_login_popup(driver)
-            WebDriverWait(driver, 15).until(
-                lambda d: handle_popup not in d.window_handles
-            )
-            driver.switch_to.window(handle_principal)
-            print("[OK] Login concluido.")
-        else:
-            raise RuntimeError("Sessao invalida e popup de login nao detectado.")
+        if _resolver_popup(driver):
+            return
+
+    # Se ainda não resolveu, assume que está logado (página com frames)
+
+
+def executar_com_sessao(driver: webdriver.Edge, acao, *args, **kwargs):
+    """
+    Executa uma ação garantindo sessão ativa.
+    Se falhar por popup de login, renova a sessão e retenta uma vez.
+    """
+    try:
+        return acao(*args, **kwargs)
+    except WebDriverException:
+        if _resolver_popup(driver):
+            return acao(*args, **kwargs)
+        raise
