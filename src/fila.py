@@ -153,4 +153,13 @@ def resumo(fila: dict) -> str:
     erros = sum(1 for i in fila["items"] if i["status"] == "erro")
     pendentes = sum(1 for i in fila["items"] if i["status"] == "pendente")
     sem_resultado = sum(1 for i in fila["items"] if i["status"] == "sem_resultado")
-    return f"Total: {total} | Concluídos: {concluidos} | Pendentes: {pendentes} | Sem resultado: {sem_resultado} | Erros: {erros}"
+    partes = [
+        f"Total: {total}",
+        f"Concluídos: {concluidos}",
+        f"Pendentes: {pendentes}",
+    ]
+    if sem_resultado:
+        partes.append(f"Sem resultado: {sem_resultado}")
+    if erros:
+        partes.append(f"Erros: {erros}")
+    return " | ".join(partes)
