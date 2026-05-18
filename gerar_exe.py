@@ -54,6 +54,21 @@ def gerar(raiz: Path, dist_dir: Path) -> Path:
         "--copy-metadata", "selenium",
         "--copy-metadata", "trio",
         "--copy-metadata", "trio-websocket",
+        # Exclui modulos pesados NAO usados pelo app (puxados por hooks
+        # do openpyxl/selenium). O codigo so faz leitura/escrita basica
+        # de xlsx e automacao do Edge — nao usa numpy/PIL/lxml/pandas.
+        # Objetivo: zip < 100 MB para versionar sem Git LFS.
+        "--exclude-module", "numpy",
+        "--exclude-module", "PIL",
+        "--exclude-module", "lxml",
+        "--exclude-module", "pandas",
+        "--exclude-module", "matplotlib",
+        "--exclude-module", "scipy",
+        "--exclude-module", "tkinter",
+        "--exclude-module", "IPython",
+        "--exclude-module", "pytest",
+        "--exclude-module", "setuptools",
+        "--exclude-module", "pip",
         str(main_script),
     ]
 
