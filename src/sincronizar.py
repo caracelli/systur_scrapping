@@ -18,7 +18,7 @@ GITHUB_BRANCH = "master"
 CONFIG_PATH   = Path("config/config.xml")
 
 
-CSV_HEADER = ["data_hora", "codigo_pessoa", "nome", "status", "detalhe"]
+CSV_HEADER = ["Data Processamento", "codigo_pessoa", "nome", "status", "detalhe"]
 
 
 def iniciar_csv() -> Path:
@@ -30,7 +30,7 @@ def iniciar_csv() -> Path:
     inserir BOM no meio do arquivo.
     """
     PASTA_LOGS.mkdir(exist_ok=True)
-    agora = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
+    agora = datetime.now().strftime("%d%m%Y_%H%M%S")
     caminho = PASTA_LOGS / f"processamento_{agora}.csv"
     with caminho.open("w", encoding="utf-8-sig", newline="") as f:
         csv.writer(f, delimiter=";").writerow(CSV_HEADER)
