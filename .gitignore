@@ -15,9 +15,11 @@ saida/*.xls
 # Fila de processamento (estado de execução — não versionar)
 processamento/
 
-# Artefatos de build do PyInstaller (gerados por gerar_exe.py — o zip
-# tem ~107 MB e excede o limite de 100 MB do GitHub)
-dist/
+# Artefatos de build do PyInstaller (gerados por gerar_exe.py).
+# Ignora tudo em dist/ EXCETO o zip distribuivel, que vai versionado
+# via Git LFS para ser baixado em outra maquina sem rebuild.
+dist/*
+!dist/SysTur_Scrapper.zip
 _build_temp/
 *.spec
 
