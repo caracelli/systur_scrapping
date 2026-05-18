@@ -80,6 +80,35 @@ def validar_excel(path: Path) -> None:
             )
 
 
+def aguardar_vpn() -> None:
+    """Garante conexao com o SYSTUR antes de abrir o navegador.
+
+    O SYSTUR so e acessivel via VPN da CVC. Se nao houver conexao,
+    pede ao usuario para conectar a VPN e tenta novamente.
+    """
+    if sessao.verificar_conexao():
+        print("[OK] Conexao com o SYSTUR confirmada.")
+        return
+
+    print("\n" + "!" * 55)
+    print("  SEM CONEXAO COM O SYSTUR (systur.cvc.com.br)")
+    print("  O sistema so e acessivel pela VPN da CVC.")
+    print("!" * 55)
+    while not sessao.verificar_conexao():
+        resp = input(
+            "\n[VPN] Conecte-se a VPN e pressione ENTER para tentar "
+            "novamente (ou digite 'sair' para cancelar): "
+        ).strip().lower()
+        if resp == "sair":
+            print("[VPN] Execucao cancelada pelo usuario.")
+            restaurar_hibernacao()
+            sys.exit(1)
+        if sessao.verificar_conexao():
+            break
+        print("[VPN] Ainda sem conexao com o SYSTUR...")
+    print("[OK] Conexao com o SYSTUR confirmada.")
+
+
 # ──────────────────────────────────────────────
 # INICIO
 # ──────────────────────────────────────────────
@@ -98,6 +127,8 @@ try:
     print(fl.resumo(fila))
 
     wb, ws, caminho_saida = sa.criar_arquivo()
+
+    aguardar_vpn()
 
     driver = sessao.abrir(headless=CONFIG["headless"])
     sessao.garantir_sessao(driver)

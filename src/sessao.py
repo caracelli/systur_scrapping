@@ -1,4 +1,7 @@
+import ssl
 import time
+import urllib.error
+import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -36,6 +39,32 @@ def carregar_credenciais() -> None:
             "Edite o arquivo credenciais.xml e preencha usuario e senha."
         )
     print("[OK] Credenciais carregadas.")
+
+
+def verificar_conexao(url: str = URL_SYSTUR, timeout: float = 8.0) -> bool:
+    """True somente se o SYSTUR responder de fato (HTTP status < 400).
+
+    Sem a VPN da CVC o host aceita conexao TCP na 443 mas responde
+    HTTP 403 (bloqueio na borda). Por isso o teste e em nivel HTTP,
+    nao um simples connect TCP — senao passaria mesmo sem VPN.
+    Verificacao de certificado desabilitada: e apenas um probe de
+    alcance, nenhum dado sensivel trafega aqui.
+    """
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    req = urllib.request.Request(
+        url, method="GET",
+        headers={"User-Agent": "Mozilla/5.0 (systur-scrapper preflight)"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=ctx) as r:
+            return r.status < 400
+    except urllib.error.HTTPError as e:
+        # 403 = bloqueio sem VPN; qualquer 4xx/5xx = nao acessivel
+        return e.code < 400
+    except Exception:
+        return False
 
 
 def abrir(headless: bool = False) -> webdriver.Edge:
