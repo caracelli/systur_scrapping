@@ -81,11 +81,27 @@ def empacotar(raiz: Path, dist_dir: Path, exe: Path) -> Path:
     # Executavel na raiz do pacote
     shutil.copy2(exe, pacote / exe.name)
 
-    # config/  -> todos os XML
+    # README.txt na raiz do pacote (passo a passo do usuario)
+    readme = raiz / "README.txt"
+    if readme.exists():
+        shutil.copy2(readme, pacote / readme.name)
+
+    # config/  -> todos os XML. credenciais.xml vai com usuario/senha
+    # EM BRANCO (o usuario preenche na maquina dele).
     destino_config = pacote / "config"
     destino_config.mkdir()
+    CRED_VAZIA = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        "<credenciais>\n"
+        "  <usuario></usuario>\n"
+        "  <senha></senha>\n"
+        "</credenciais>\n"
+    )
     for arq in (raiz / "config").glob("*.xml"):
-        shutil.copy2(arq, destino_config / arq.name)
+        if arq.name.lower() == "credenciais.xml":
+            (destino_config / arq.name).write_text(CRED_VAZIA, encoding="utf-8")
+        else:
+            shutil.copy2(arq, destino_config / arq.name)
 
     # entrada/ -> Excel(s) de entrada
     destino_entrada = pacote / "entrada"
