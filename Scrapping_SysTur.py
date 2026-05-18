@@ -156,7 +156,7 @@ try:
             resultados = cons.capturar_resultados(driver)
 
             if not resultados:
-                print(f"  [INFO] Sem resultado. Seguindo...")
+                print("  [INFO] Nao existem dados para este codigo. Seguindo...")
                 fl.marcar_sem_resultado(fila, codigo)
             else:
                 sa.adicionar_linhas(ws, codigo, nome, resultados)
@@ -168,7 +168,7 @@ try:
 
         except WebDriverException as e:
             fl.marcar_erro(fila, codigo, str(e)[:200])
-            print(f"  [ERRO] {e.__class__.__name__}: {str(e)[:100]}")
+            print(f"  [ERRO] Erro - {e.__class__.__name__}: {str(e)[:100]}")
             try:
                 navegacao.ir_para_vendedores(driver)
             except Exception:

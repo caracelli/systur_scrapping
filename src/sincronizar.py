@@ -51,15 +51,18 @@ def escrever_log(fila: dict, caminho_saida: Path, excel_entrada: Path) -> Path:
     if erros:
         linhas.append("ERROS")
         for item in erros:
+            descricao = (item.get("erro", "") or "").strip() or "sem descricao"
             linhas.append(f"  [{item['codigo_pessoa']}] {item['nome']}")
             linhas.append(f"    Tentativas: {item['tentativas']}")
-            linhas.append(f"    Erro: {item.get('erro', '')}")
+            linhas.append(f"    Erro - {descricao}")
         linhas.append("")
 
     if sem_res:
         linhas.append("SEM RESULTADO")
         for item in sem_res:
-            linhas.append(f"  [{item['codigo_pessoa']}] {item['nome']}")
+            linhas.append(
+                f"  [{item['codigo_pessoa']}] {item['nome']} — Não existem dados"
+            )
         linhas.append("")
 
     if pendentes:
