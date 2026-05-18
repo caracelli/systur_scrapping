@@ -198,8 +198,7 @@ try:
     print(f"  {fl.resumo(fila)}")
     print("=" * 55)
 
-    print(f"  Log CSV: {caminho_log.name}")
-    sync.sincronizar_git(caminho_log)
+    print(f"  Log CSV: {caminho_log}")
 
 finally:
     restaurar_hibernacao()

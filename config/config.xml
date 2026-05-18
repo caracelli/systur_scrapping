@@ -7,10 +7,4 @@
   <!-- 0 = processa tudo | N = processa apenas os primeiros N itens (teste) -->
   <limite>0</limite>
 
-  <!-- Token do GitHub para enviar o log automaticamente quando a maquina
-       NAO for um repositorio git (ex.: execucao do exe no cliente).
-       Deixe VAZIO no repositorio (o GitHub revoga tokens commitados).
-       O token real e injetado apenas na copia que vai dentro do .zip. -->
-  <github_token></github_token>
-
 </config>
