@@ -5,6 +5,6 @@
   <headless>true</headless>
 
   <!-- 0 = processa tudo | N = processa apenas os primeiros N itens (teste) -->
-  <limite>50</limite>
+  <limite>0</limite>
 
 </config>
