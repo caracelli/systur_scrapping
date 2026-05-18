@@ -15,6 +15,12 @@ saida/*.xls
 # Fila de processamento (estado de execução — não versionar)
 processamento/
 
+# Artefatos de build do PyInstaller (gerados por gerar_exe.py — o zip
+# tem ~107 MB e excede o limite de 100 MB do GitHub)
+dist/
+_build_temp/
+*.spec
+
 # OS
 .DS_Store
 Thumbs.db
