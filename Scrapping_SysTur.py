@@ -143,6 +143,8 @@ try:
     if limite:
         print(f"[INFO] Modo teste: processando ate {limite} item(ns).\n")
 
+    caminho_log = sync.iniciar_csv()
+
     processados = 0
     item = fl.proximo(fila)
     while item and (not limite or processados < limite):
@@ -158,17 +160,23 @@ try:
             if not resultados:
                 print("  [INFO] Nao existem dados para este codigo. Seguindo...")
                 fl.marcar_sem_resultado(fila, codigo)
+                sync.registrar(caminho_log, codigo, nome,
+                               "sem_resultado", "Não existem dados")
             else:
                 sa.adicionar_linhas(ws, codigo, nome, resultados)
                 sa.salvar(wb, caminho_saida)
                 fl.marcar_concluido(fila, codigo)
                 print(f"  [OK] {len(resultados)} linha(s) salva(s).")
+                sync.registrar(caminho_log, codigo, nome, "concluido",
+                               f"{len(resultados)} linha(s) salva(s)")
 
             cons.voltar(driver)
 
         except WebDriverException as e:
             fl.marcar_erro(fila, codigo, str(e)[:200])
             print(f"  [ERRO] Erro - {e.__class__.__name__}: {str(e)[:100]}")
+            sync.registrar(caminho_log, codigo, nome, "erro",
+                           f"Erro - {e.__class__.__name__}: {str(e)[:200]}")
             try:
                 navegacao.ir_para_vendedores(driver)
             except Exception:
@@ -190,7 +198,7 @@ try:
     print(f"  {fl.resumo(fila)}")
     print("=" * 55)
 
-    caminho_log = sync.escrever_log(fila, caminho_saida, excel_entrada)
+    print(f"  Log CSV: {caminho_log.name}")
     sync.sincronizar_git(caminho_log)
 
 finally:
