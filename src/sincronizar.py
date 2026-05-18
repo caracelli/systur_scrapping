@@ -70,5 +70,9 @@ def sincronizar_git(caminho_log: Path) -> None:
         subprocess.run(["git", "commit", "-m", msg], check=True)
         subprocess.run(["git", "push"], check=True)
         print("[GIT] Log sincronizado com sucesso.")
-    except subprocess.CalledProcessError as e:
-        print(f"[GIT] Falha ao sincronizar: {e}")
+    except Exception as e:
+        # Em maquina sem git/sem repositorio (ex.: execucao do exe no cliente)
+        # isso e esperado. O log ja foi gravado localmente em logs/ — basta
+        # enviar esse arquivo manualmente.
+        print(f"[GIT] Sincronizacao ignorada ({e.__class__.__name__}): {e}")
+        print(f"[GIT] O log esta salvo localmente em: {caminho_log}")

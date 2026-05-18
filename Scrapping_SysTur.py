@@ -3,6 +3,11 @@ import subprocess
 import ctypes
 
 def garantir_dependencias():
+    # Em exe congelado (PyInstaller) as dependencias ja estao embutidas e
+    # sys.executable e o proprio exe — chamar "pip" aqui faria o exe se
+    # re-executar em loop infinito. Entao nao faz nada quando frozen.
+    if getattr(sys, "frozen", False):
+        return
     for pacote in ["selenium", "openpyxl"]:
         try:
             __import__(pacote.replace("-", "_"))
