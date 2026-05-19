@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 import navegacao
@@ -13,11 +14,19 @@ INDICE_TABELA_DADOS = 1
 INICIO_LINHAS_DADOS = 2
 
 
-def fazer_consulta(driver: webdriver.Edge, codigo_pessoa: int) -> None:
+def fazer_consulta(driver: webdriver.Edge, codigo_pessoa: int,
+                   st_habilitacao: str = "Todos") -> None:
     navegacao.entrar_frame_principal(driver)
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "prc_cd_pessoa"))
     )
+    try:
+        Select(driver.find_element(By.ID, "prc_st_habilitacao")) \
+            .select_by_visible_text(st_habilitacao)
+    except NoSuchElementException:
+        print(f"  [AVISO] Opcao '{st_habilitacao}' nao encontrada em "
+              f"prc_st_habilitacao. Mantendo valor padrao da pagina.")
+
     campo = driver.find_element(By.ID, "prc_cd_pessoa")
     campo.clear()
     campo.send_keys(str(codigo_pessoa))

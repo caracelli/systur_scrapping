@@ -52,6 +52,7 @@ def ler_config() -> dict:
     return {
         "headless": root.findtext("headless", "true").strip().lower() == "true",
         "limite": int(root.findtext("limite", "0").strip()),
+        "st_habilitacao": root.findtext("st_habilitacao", "Todos").strip(),
     }
 
 CONFIG = ler_config()
@@ -154,7 +155,7 @@ try:
 
         try:
             sessao.garantir_sessao(driver)
-            cons.fazer_consulta(driver, codigo)
+            cons.fazer_consulta(driver, codigo, CONFIG["st_habilitacao"])
             resultados = cons.capturar_resultados(driver)
 
             if not resultados:

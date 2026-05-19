@@ -7,4 +7,7 @@
   <!-- 0 = processa tudo | N = processa apenas os primeiros N itens (teste) -->
   <limite>0</limite>
 
+  <!-- Status de habilitacao selecionado em cada consulta (texto exato da opcao do dropdown) -->
+  <st_habilitacao>Todos</st_habilitacao>
+
 </config>
