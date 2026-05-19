@@ -18,6 +18,9 @@
     <!-- name ou id do input "Codigo Pessoa" -->
     <element id="campo_codigo_pessoa">//*[@id="prc_cd_pessoa"]</element>
 
+    <!-- dropdown "Status de habilitacao" (a opcao selecionada vem de config.xml) -->
+    <element id="campo_st_habilitacao">//*[@id="prc_st_habilitacao"]</element>
+
     <!-- texto ou xpath do botao/link "Consultar" -->
     <element id="btn_consultar">//*[@id="prc_evento"]</element>
 

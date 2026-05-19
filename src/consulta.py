@@ -1,4 +1,5 @@
 import time
+import xml.etree.ElementTree as ET
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,23 +15,32 @@ INDICE_TABELA_DADOS = 1
 INICIO_LINHAS_DADOS = 2
 
 
+def _carregar_xpaths(pagina: str = "busca") -> dict:
+    root = ET.parse("config/xpaths.xml").getroot()
+    page = root.find(f"./page[@name='{pagina}']")
+    return {e.get("id"): e.text.strip() for e in page.findall("element")}
+
+
+XP = _carregar_xpaths()
+
+
 def fazer_consulta(driver: webdriver.Edge, codigo_pessoa: int,
                    st_habilitacao: str = "Todos") -> None:
     navegacao.entrar_frame_principal(driver)
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "prc_cd_pessoa"))
+        EC.presence_of_element_located((By.XPATH, XP["campo_codigo_pessoa"]))
     )
     try:
-        Select(driver.find_element(By.ID, "prc_st_habilitacao")) \
+        Select(driver.find_element(By.XPATH, XP["campo_st_habilitacao"])) \
             .select_by_visible_text(st_habilitacao)
     except NoSuchElementException:
         print(f"  [AVISO] Opcao '{st_habilitacao}' nao encontrada em "
-              f"prc_st_habilitacao. Mantendo valor padrao da pagina.")
+              f"campo_st_habilitacao. Mantendo valor padrao da pagina.")
 
-    campo = driver.find_element(By.ID, "prc_cd_pessoa")
+    campo = driver.find_element(By.XPATH, XP["campo_codigo_pessoa"])
     campo.clear()
     campo.send_keys(str(codigo_pessoa))
-    driver.find_element(By.ID, "prc_evento").click()
+    driver.find_element(By.XPATH, XP["btn_consultar"]).click()
     time.sleep(2)
 
 
@@ -59,7 +69,7 @@ def capturar_resultados(driver: webdriver.Edge) -> list[dict]:
 
 def voltar(driver: webdriver.Edge) -> None:
     try:
-        driver.find_element(By.ID, "prc_voltar").click()
+        driver.find_element(By.XPATH, XP["btn_voltar"]).click()
         time.sleep(1)
     except NoSuchElementException:
         pass
